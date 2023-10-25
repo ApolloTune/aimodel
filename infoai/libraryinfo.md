@@ -16,4 +16,8 @@ word_tokenize, verilen bir metni kelimelerine ayırarak bir liste haline getirir
 stopwords modülü, yaygın olarak kullanılan dildeki "durma kelimeleri"ni içerir. Bu, bir metindeki yaygın, anlamsız kelimeleri (örneğin, "ve", "veya", "bir", "bu" gibi) filtrelemek için kullanılır. Bu, analizin odaklanmasını ve verilerin daha temiz bir şekilde işlenmesini sağlar.
 7. from collections import Counter:  
 Counter, bir veri koleksiyonunun elemanlarını saymak için kullanılır. Örneğin, bir listedeki her bir öğenin kaç kez geçtiğini belirlemek için kullanılabilir. Bu, metin verilerinin içeriğini daha iyi anlamak için kullanılabilir.
+8. from nltk.util import ngrams:  
+Natural Language Toolkit (NLTK) kütüphanesinin bir parçasıdır ve metin verileri üzerinde dil modeli oluştururken veya dil analizi yaparken kullanılır. Bu kütüphane, metinleri belirli bir "n" (sıklık) değerine göre bir araya getirerek n-gram'lar oluşturmanıza olanak tanır.
+9. from transformers import AutoTokenizer:  
+dil modelleri ile çalışırken metin verilerinizi modelin anlayabileceği forma dönüştürmek için kullanılır. Bu, metin verilerinin işlenmesi ve NLP görevlerinin gerçekleştirilmesi için önemli bir adımdır.
 

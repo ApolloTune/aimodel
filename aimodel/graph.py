@@ -30,3 +30,11 @@ def setBigram(top_15):
     ax.set_xlabel('Counts')
     ax.set_title('Top-15 Most Common Bigrams in Positive Comments')
     plt.show()
+def setHistogram(text_list, tokenizer):
+    tokenized_texts = list(map(lambda t: tokenizer.tokenize(t), text_list))
+    tokenized_texts_len = list(map(lambda t: len(t), tokenized_texts))
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.hist(tokenized_texts_len, bins=40)
+    ax.set_xlabel("Length of Comment Embeddings")
+    ax.set_ylabel("Number of Comments")
+    plt.show()
