@@ -20,4 +20,20 @@ Counter, bir veri koleksiyonunun elemanlarını saymak için kullanılır. Örne
 Natural Language Toolkit (NLTK) kütüphanesinin bir parçasıdır ve metin verileri üzerinde dil modeli oluştururken veya dil analizi yaparken kullanılır. Bu kütüphane, metinleri belirli bir "n" (sıklık) değerine göre bir araya getirerek n-gram'lar oluşturmanıza olanak tanır.
 9. from transformers import AutoTokenizer:  
 dil modelleri ile çalışırken metin verilerinizi modelin anlayabileceği forma dönüştürmek için kullanılır. Bu, metin verilerinin işlenmesi ve NLP görevlerinin gerçekleştirilmesi için önemli bir adımdır.
+10. import matplotlib.pyplot as plt:  
+matplotlib genellikle veri analizi ve makine öğrenmesi projelerinde veri keşfi ve sonuçların görselleştirilmesi için kullanılır. Ayrıca, veri bilimi topluluğunda çok yaygın olarak kullanılan bir kütüphanedir.
+Histogram, Çubur-Bar, Dağılım, Çizgi grafikleri çizilmesini sağlar.
+11. from sklearn.model_selection import train_test_split:  
+train_test_split fonksiyonu, veri setini rastgele iki parçaya ayırarak, modelin eğitim verileri üzerinde öğrenmesini ve test verileri üzerinde değerlendirilmesini sağlar. Bu, modelin gerçek dünya verileri üzerinde nasıl performans göstereceğini tahmin etmek için kullanılır.
+12. from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler:
+- - TensorDataset: torch.Tensor nesnesini birleştirerek veri setini oluşturur.
+- - DataLoader: veri kümesini yüklemek ve işlemek için kullanılır. Veriyi mini gruplara ayırarak eğitim döngüsü oluşturur. Ayrıca, veriyi rastgele karıştırma, paralel yükleme ve diğer özellikleri sağlar.
+- - RandomSampler: Veri kümesinden rasgele örnekler seçmek için kullanılır. Bu, eğitim sürecinde çeşitlilik eklemek için yaygın olarak kullanılır.
+- - SequentialSampler: Veri kümesindeki örnekleri sırayla seçmek için kullanılır. Bu, doğrusal bir sıra ile veri setine erişim sağlar.
+13. from transformers import AutoModelForSequenceClassification, AdamW, AutoConfig:  
+- - AutoModelForSequenceClassification: Bu, bir dil modelini belirli bir görev için önceden eğitilmiş bir modelle birleştirmek için kullanılır. Özellikle, bu belirli bir metin sınıflandırma görevi için eğitilmiş bir modeli temsil eder. Bu sınıf, önceden eğitilmiş bir dil modelini (örneğin BERT, GPT-2, vb.) belirli bir sınıflandırma görevi için uyarlamak için kullanılır. Örneğin, belirli bir dilde metinlerin pozitif veya negatif olup olmadığını sınıflandırmak gibi.
+- - AdamW: Bu, bir optimizasyon algoritması olan AdamW'yi temsil eder. AdamW, eğitim sırasında modelin ağırlıklarını güncellemek için kullanılır. Bu, gradient iniş tabanlı eğitim algoritmalarından biridir.
+- - AutoConfig: Bu, bir modelin yapılandırma ayarlarını yüklemek için kullanılır. Özellikle, önceden eğitilmiş bir modelin yapılandırmasını almak için kullanılır. Bu ayarlar, modelin hiperparametreleri, katman sayısı, giriş boyutları vb. gibi önemli bilgileri içerir.
+
+
 

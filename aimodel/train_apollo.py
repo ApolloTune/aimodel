@@ -1,6 +1,7 @@
 import graph
 import init
 import cleantext
+import training_model
 import numpy as np
 import pandas as pd
 import os
@@ -59,4 +60,15 @@ df_neg = df_train[df_train["Label"] == 0]
 comments = df_train.comment.values
 labels = df_train.Label.values
 tokenizer = AutoTokenizer.from_pretrained("dbmdz/bert-base-turkish-cased", do_lower_case=True)
-graph.setHistogram(comments, tokenizer)
+#graph.setHistogram(comments, tokenizer) # görüldüğü üzere 512 token değil çoğu yorumların token sayısı 100 den az.
+
+indices = tokenizer.batch_encode_plus(list(comments), max_length=128, add_special_tokens=True, return_attention_mask=True, padding='longest', truncation=True)
+input_ids=indices["input_ids"]
+attention_masks=indices["attention_mask"]
+# print(input_ids[0])
+# print(comments[0])
+training_model.set_train_model(input_ids, labels, attention_masks)
+
+
+
+

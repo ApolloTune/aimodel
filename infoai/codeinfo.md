@@ -26,5 +26,12 @@ def setHistogram(text_list, tokenizer):
     return
 ````
 - Bu fonksiyon, metinlerin tokenleştirilmiş hali (yani, her bir metnin kaç token içerdiği) hakkında bir görsel sunar. 
-
+````python
+indices = tokenizer.batch_encode_plus(list(comments), max_length=128, add_special_tokens=True, return_attention_mask=True, padding='longest', truncation=True)
+input_ids=indices["input_ids"]
+attention_masks=indices["attention_mask"]
+print(input_ids[0])
+print(comments[0])
+````  
+-  bu kod bir metin listesini BERT modeli için uygun formata dönüştürür ve token ID'leri ile dikkat maskelerini input_ids ve attention_masks değişkenlerinde saklar. Ayrıca, ilk metnin token ID'lerini ve orijinal metni ekrana yazdırır.
 
