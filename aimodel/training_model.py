@@ -2,6 +2,8 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 from transformers import AutoModelForSequenceClassification, AdamW, AutoConfig, get_linear_schedule_with_warmup
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import classification_report
 import numpy as np
 import time
 import datetime
@@ -215,6 +217,56 @@ def set_train_model(input_ids, labels, attention_masks):
 
     print("")
     print("Training complete!")
+    torch.save(model.state_dict(), 'training_model.pth')
+
+def model_performance_test(test_input_ids, test_attention_masks, test_labels):
+    config = AutoConfig.from_pretrained("dbmdz/bert-base-turkish-cased", num_labels=2)
+    model = AutoModelForSequenceClassification.from_pretrained("dbmdz/bert-base-turkish-cased", config=config)
+    model.load_state_dict(torch.load('training_model.pth'))
+
+    prediction_inputs = torch.tensor(test_input_ids)
+    prediction_masks = torch.tensor(test_attention_masks)
+    prediction_labels = torch.tensor(test_labels)
+
+
+    batch_size = 32
+
+    #Create DataLoader
+    prediction_data = TensorDataset(prediction_inputs, prediction_masks, prediction_labels)
+    prediction_sampler = SequentialSampler(prediction_data)
+    prediction_datalaoder = DataLoader(prediction_data, sampler=prediction_sampler, batch_size=batch_size)
+
+    #Prediction on test set
+    print('Predicting labels for {:,} test sentences...'.format(len(prediction_inputs)))
+    model.eval()
+
+    predictions, true_labels = [], []
+
+    #Predict
+    device = torch.device("cpu")
+    for batch in prediction_datalaoder:
+        batch = tuple(t.to(device) for t in batch)
+
+        b_input_ids, b_input_masks, b_labels = batch
+
+        with torch.no_grad():
+            outputs = model(b_input_ids, token_type_ids=None, attention_mask = b_input_masks)
+
+        logits = outputs[0]
+
+        logits = logits.detach().cpu().numpy()
+        label_ids = b_labels.to('cpu').numpy()
+
+        predictions.append(logits)
+        true_labels.append(label_ids)
+    print("     Done.")
+    flat_predictions = [item for sublist in predictions for item in sublist]
+    flat_predictions = np.argmax(flat_predictions, axis=1).flatten()
+
+    flat_true_labels = [item for sublist in true_labels for item in sublist]
+    print("Accuracy of BERT is: ",accuracy_score(flat_true_labels,flat_predictions))
+    print(classification_report(flat_true_labels, flat_predictions))
+
 
 def flat_accuracy(preds, labels):
     pred_flat = np.argmax(preds, axis=1).flatten()

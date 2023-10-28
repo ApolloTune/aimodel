@@ -57,6 +57,8 @@ df_neg = df_train[df_train["Label"] == 0]
 
 # negatif duygular unigrams
 # createUnigram(df_neg)
+
+# TRAINING MODEL
 comments = df_train.comment.values
 labels = df_train.Label.values
 tokenizer = AutoTokenizer.from_pretrained("dbmdz/bert-base-turkish-cased", do_lower_case=True)
@@ -67,8 +69,15 @@ input_ids=indices["input_ids"]
 attention_masks=indices["attention_mask"]
 # print(input_ids[0])
 # print(comments[0])
-training_model.set_train_model(input_ids, labels, attention_masks)
+#training_model.set_train_model(input_ids, labels, attention_masks)
 
+# MODEL PERFORMANCE TEST
+test_comments = df_test.comment.values
+test_labels = df_test.Label.values
 
+test_indices = tokenizer.batch_encode_plus(list(test_comments), max_length=128, add_special_tokens=True, return_attention_mask=True, padding='longest', truncation=True)
+test_input_ids = test_indices["input_ids"]
+test_attention_masks = test_indices["attention_mask"]
+training_model.model_performance_test(test_input_ids, test_attention_masks, test_labels)
 
 
