@@ -9,7 +9,7 @@ import time
 import datetime
 import random
 
-# %99 train için %1 doğrulama için
+# %80 train için %20 doğrulama için
 def set_train_model(input_ids, labels, attention_masks):
     train_inputs, validation_inputs, train_labels, validation_labels = train_test_split(input_ids,labels,random_state=42, test_size=0.2)
     train_masks, validation_masks, _, _ = train_test_split(attention_masks,labels,random_state=42,test_size=0.2)
@@ -44,6 +44,8 @@ def set_train_model(input_ids, labels, attention_masks):
     epochs = 5
     total_steps = len(train_dataloader) * epochs
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0,num_training_steps=total_steps)
+
+    # Set the seed value all over the place to make this reproducible.
     seed_val = 42
     device = torch.device("cpu")
     random.seed(seed_val)

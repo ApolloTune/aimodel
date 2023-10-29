@@ -34,6 +34,9 @@ train_test_split fonksiyonu, veri setini rastgele iki parçaya ayırarak, modeli
 - - AutoModelForSequenceClassification: Bu, bir dil modelini belirli bir görev için önceden eğitilmiş bir modelle birleştirmek için kullanılır. Özellikle, bu belirli bir metin sınıflandırma görevi için eğitilmiş bir modeli temsil eder. Bu sınıf, önceden eğitilmiş bir dil modelini (örneğin BERT, GPT-2, vb.) belirli bir sınıflandırma görevi için uyarlamak için kullanılır. Örneğin, belirli bir dilde metinlerin pozitif veya negatif olup olmadığını sınıflandırmak gibi.
 - - AdamW: Bu, bir optimizasyon algoritması olan AdamW'yi temsil eder. AdamW, eğitim sırasında modelin ağırlıklarını güncellemek için kullanılır. Bu, gradient iniş tabanlı eğitim algoritmalarından biridir.
 - - AutoConfig: Bu, bir modelin yapılandırma ayarlarını yüklemek için kullanılır. Özellikle, önceden eğitilmiş bir modelin yapılandırmasını almak için kullanılır. Bu ayarlar, modelin hiperparametreleri, katman sayısı, giriş boyutları vb. gibi önemli bilgileri içerir.
-
-
-
+14. from transformers import get_linear_schedule_with_warmup:  
+get_linear_schedule_with_warmup fonksiyonu eğitim sürecinde öğrenme oranını ayarlamak ve başlangıçta yavaşça artırarak modelin daha iyi genelleştirmesine yardımcı olmak için kullanılır.
+15. from sklearn.metrics import accuracy_score:  
+accuracy_score fonksiyonu, bir sınıflandırma modelinin tahminlerinin ne kadar doğru olduğunu değerlendirmek için kullanılır. Bu fonksiyon, gerçek etiketlerle tahmin edilen etiketler arasındaki doğru eşleşmelerin yüzdesini hesaplar.
+16. from sklearn.metrics import classification_report:  
+classification_report, sınıflandırma problemlerinde modelin performansını değerlendirmek için kullanılır. Bu rapor, her bir sınıf için kesinlik (precision), duyarlılık (recall), F1 puanı (F1-score) ve destek (support) metriklerini sağlar.
