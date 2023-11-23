@@ -8,7 +8,7 @@ exclude = set(string.punctuation)
 def text_process(df):
     token_list = []
     for i, r in df.iterrows():
-        text = ''.join(ch for ch in df["comment"][i] if ch not in exclude and ch != "’")
+        text = ''.join(ch for ch in df["lyrics"][i] if ch not in exclude and ch != "’")
         tokens = word_tokenize(text)
         tokens = [tok.lower() for tok in tokens if tok not in stop_words]
         token_list.extend(tokens)

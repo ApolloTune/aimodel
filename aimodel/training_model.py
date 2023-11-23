@@ -9,11 +9,12 @@ import time
 import datetime
 import random
 
+
 # %80 train için %20 doğrulama için
 def set_train_model(input_ids, labels, attention_masks):
-    train_inputs, validation_inputs, train_labels, validation_labels = train_test_split(input_ids,labels,random_state=42, test_size=0.2)
-    train_masks, validation_masks, _, _ = train_test_split(attention_masks,labels,random_state=42,test_size=0.2)
-
+    train_inputs, validation_inputs, train_labels, validation_labels = train_test_split(input_ids, labels,
+                                                                                        random_state=42, test_size=0.2)
+    train_masks, validation_masks, _, _ = train_test_split(attention_masks, labels, random_state=42, test_size=0.2)
 
     train_inputs = torch.tensor(train_inputs)
     validation_inputs = torch.tensor(validation_inputs)
@@ -21,9 +22,9 @@ def set_train_model(input_ids, labels, attention_masks):
     validation_labels = torch.tensor(validation_labels, dtype=torch.long)
     train_masks = torch.tensor(train_masks, dtype=torch.long)
     validation_masks = torch.tensor(validation_masks, dtype=torch.long)
-
+    torch.cuda.empty_cache()
     # Eğitim seti için Dataloader'ı oluşturalım
-    batch_size = 32
+    batch_size = 16
     train_data = TensorDataset(train_inputs, train_masks, train_labels)
     train_sampler = RandomSampler(train_data)
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
@@ -33,9 +34,10 @@ def set_train_model(input_ids, labels, attention_masks):
     validation_sampler = SequentialSampler(validation_data)
     validation_dataloader = DataLoader(validation_data, sampler=validation_sampler, batch_size=batch_size)
 
-    config = AutoConfig.from_pretrained("dbmdz/bert-base-turkish-cased", num_labels=2)
+    config = AutoConfig.from_pretrained("dbmdz/bert-base-turkish-cased", num_labels=4)
     model = AutoModelForSequenceClassification.from_pretrained("dbmdz/bert-base-turkish-cased", config=config)
-    model.cpu()
+
+    model.cuda()
     optimizer = AdamW(model.parameters(),
                       lr=2e-5,  # args.learning_rate - default is 5e-5
                       betas=[0.9, 0.999],
@@ -43,14 +45,17 @@ def set_train_model(input_ids, labels, attention_masks):
                       )
     epochs = 5
     total_steps = len(train_dataloader) * epochs
-    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0,num_training_steps=total_steps)
+    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=total_steps)
 
     # Set the seed value all over the place to make this reproducible.
     seed_val = 42
-    device = torch.device("cpu")
+
+    device = torch.device("cuda")
+
     random.seed(seed_val)
     np.random.seed(seed_val)
     torch.manual_seed(seed_val)
+    torch.cuda.manual_seed(seed_val)
 
     # Store the average loss after each epoch so we can plot them.
     loss_values = []
@@ -219,40 +224,41 @@ def set_train_model(input_ids, labels, attention_masks):
 
     print("")
     print("Training complete!")
-    torch.save(model.state_dict(), 'training_model.pth')
+    torch.save(model.state_dict(), 'training_model_lyrics.pth')
+
 
 def model_performance_test(test_input_ids, test_attention_masks, test_labels):
-    config = AutoConfig.from_pretrained("dbmdz/bert-base-turkish-cased", num_labels=2)
+    config = AutoConfig.from_pretrained("dbmdz/bert-base-turkish-cased", num_labels=4)
     model = AutoModelForSequenceClassification.from_pretrained("dbmdz/bert-base-turkish-cased", config=config)
-    model.load_state_dict(torch.load('training_model.pth'))
+    model.load_state_dict(torch.load('training_model_lyrics.pth'))
+    device = torch.device("cuda")
+    model = model.to(device)
 
-    prediction_inputs = torch.tensor(test_input_ids)
-    prediction_masks = torch.tensor(test_attention_masks)
-    prediction_labels = torch.tensor(test_labels)
+    prediction_inputs = torch.tensor(test_input_ids).to(device)
+    prediction_masks = torch.tensor(test_attention_masks).to(device)
+    prediction_labels = torch.tensor(test_labels).to(device)
 
+    batch_size = 16
 
-    batch_size = 32
-
-    #Create DataLoader
+    # Create DataLoader
     prediction_data = TensorDataset(prediction_inputs, prediction_masks, prediction_labels)
     prediction_sampler = SequentialSampler(prediction_data)
     prediction_datalaoder = DataLoader(prediction_data, sampler=prediction_sampler, batch_size=batch_size)
 
-    #Prediction on test set
+    # Prediction on test set
     print('Predicting labels for {:,} test sentences...'.format(len(prediction_inputs)))
     model.eval()
 
     predictions, true_labels = [], []
 
-    #Predict
-    device = torch.device("cpu")
+    # Predict
     for batch in prediction_datalaoder:
         batch = tuple(t.to(device) for t in batch)
 
         b_input_ids, b_input_masks, b_labels = batch
 
         with torch.no_grad():
-            outputs = model(b_input_ids, token_type_ids=None, attention_mask = b_input_masks)
+            outputs = model(b_input_ids, token_type_ids=None, attention_mask=b_input_masks)
 
         logits = outputs[0]
 
@@ -266,7 +272,7 @@ def model_performance_test(test_input_ids, test_attention_masks, test_labels):
     flat_predictions = np.argmax(flat_predictions, axis=1).flatten()
 
     flat_true_labels = [item for sublist in true_labels for item in sublist]
-    print("Accuracy of BERT is: ",accuracy_score(flat_true_labels,flat_predictions))
+    print("Accuracy of BERT is: ", accuracy_score(flat_true_labels, flat_predictions))
     print(classification_report(flat_true_labels, flat_predictions))
 
 
@@ -274,6 +280,8 @@ def flat_accuracy(preds, labels):
     pred_flat = np.argmax(preds, axis=1).flatten()
     labels_flat = labels.flatten()
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
+
+
 def format_time(elapsed):
     elapsed_rounded = int(round(elapsed))
     return str(datetime.timedelta(seconds=elapsed_rounded))
