@@ -2,12 +2,13 @@ import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 from transformers import AutoModelForSequenceClassification, AdamW, AutoConfig, get_linear_schedule_with_warmup
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
+import matplotlib.pyplot as plt
 import numpy as np
 import time
 import datetime
 import random
+import seaborn as sns
 
 
 # %80 train için %20 doğrulama için
@@ -274,6 +275,18 @@ def model_performance_test(test_input_ids, test_attention_masks, test_labels):
     flat_true_labels = [item for sublist in true_labels for item in sublist]
     print("Accuracy of BERT is: ", accuracy_score(flat_true_labels, flat_predictions))
     print(classification_report(flat_true_labels, flat_predictions))
+
+    # Confusion matrix
+    cm = confusion_matrix(flat_true_labels, flat_predictions)
+
+    # Plot confusion matrix
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=np.unique(flat_true_labels),
+                yticklabels=np.unique(flat_true_labels))
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.title('Confusion Matrix')
+    plt.savefig('confusion_matrix.png')
 
 
 def flat_accuracy(preds, labels):
