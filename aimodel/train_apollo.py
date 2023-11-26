@@ -97,18 +97,18 @@ createUnigram(df_motivasyon)
 
 # TRAINING MODEL
 ''':Training Model'''
-# lyrics = df_train.lyrics.values
-# df_class = df_train['class'].values
-# tokenizer = AutoTokenizer.from_pretrained("dbmdz/bert-base-turkish-cased", do_lower_case=True)
-# # graph.setHistogram(lyrics, tokenizer) # Görüldüğü üzere token sayımız 1700 lere kadar çıkıyor bert maksimum 512 token kabul ediyor
-# # Burada Kaldım....
-# indices = tokenizer.batch_encode_plus(list(lyrics), max_length=512, add_special_tokens=True, return_attention_mask=True,
-#                                       padding='longest', truncation=True)
-# input_ids = indices["input_ids"]
-# attention_masks = indices["attention_mask"]
-# # print(input_ids[0])
-# # print(lyrics[0])
-# training_model.set_train_model(input_ids, df_class, attention_masks)
+lyrics = df_train.lyrics.values
+df_class = df_train['class'].values
+tokenizer = AutoTokenizer.from_pretrained("dbmdz/bert-base-turkish-cased", do_lower_case=True)
+# graph.setHistogram(lyrics, tokenizer) # Görüldüğü üzere token sayımız 1700 lere kadar çıkıyor bert maksimum 512 token kabul ediyor
+# Burada Kaldım....
+indices = tokenizer.batch_encode_plus(list(lyrics), max_length=512, add_special_tokens=True, return_attention_mask=True,
+                                      padding='longest', truncation=True)
+input_ids = indices["input_ids"]
+attention_masks = indices["attention_mask"]
+# print(input_ids[0])
+# print(lyrics[0])
+training_model.set_train_model(input_ids, df_class, attention_masks)
 
 # MODEL PERFORMANCE TEST
 # :Model Performance Test
